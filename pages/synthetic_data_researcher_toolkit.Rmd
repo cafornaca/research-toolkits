@@ -1,0 +1,117 @@
+---
+title: "UC Davis DataLab Synthetic Data Toolkit"
+date: "`r Sys.Date()`"
+author: "UC Davis DataLab"
+output:
+  rmdformats::readthedown:
+    highlight: kate
+    css: datalab_theme.css
+bibliography: references.bib
+link-citations: TRUE
+csl: apa.csl
+---
+
+```{r setup, include=FALSE}
+library(knitr)
+library(rmdformats)
+
+## Global options
+options(max.print="75")
+opts_chunk$set(echo=FALSE,
+	             cache=TRUE,
+               prompt=FALSE,
+               tidy=TRUE,
+               comment=NA,
+               message=FALSE,
+               warning=FALSE)
+opts_knit$set(width=75)
+```
+
+# Overview
+
+This page will provide you with basic guidance for using the Synthetic Data Vault (SDV) Python library for generating synthetic data to augment your already-existing datasets. 
+
+Synthetic data (or "simulated data", "imputed data") is data that has been generated from an existing dataset. It bears the same statistical properties of the original dataset but does not give insight into identifying the original data. Synthetic data can be used for building models, conducting research, and more. Both statistical simulation and computational derivation can be used to generate synthetic data. 
+
+## About SDV
+
+SDV is an open source project that uses uses probabilistic graphical modeling and deep learning to create synthetic data based off of the given dataset. 
+
+Unique hierarchical generative modeling and recursive sampling allows for different structures of data to be used and generated. 
+
+SDV is a great tool to use to generate synthetic data when you don't have enough data or if you need some data to test your models with. 
+
+### How does SDV work? 
+
+SDV contains several models and methods for your use in generating synthetic data. 
+
+### Which model should I choose? 
+
+If you are generating tabular data with many continuous or quantifiable features, it is reccomended that you use the GaussianCopula or the TVAE models. The CTGAN model has also performed well for tabular data when the original data is mostly categorical or nominal. 
+
+If you are generating synthetic images, it is reccomended that you use the CTGAN or CopulaGAN models.
+
+SDV is not limited to just generating tabular data or image data either. Information on how to generate timeseries data can be found in the SDV documentation.
+
+
+# SDV Example: Generating COVID-19 Variants
+
+## Environment Set-up
+
+Before installing SDV, it is reccomended that you have available other data science libraries that will faciliate your use of the tool. In this example, an Anaconda environment to host my Jupyter Notebook is used. To find out how you can also set-up your general data science environment, please see the [DataLab Install Guide Toolkit](https://datalab.ucdavis.edu/install-guide/){rel="noopener noreferrer" target="_blank"}.
+
+## SDV Set-up
+
+SDV can be installed via PyPi just like any other Python library served in a similar manner. 
+
+## Data
+For this toolkit, we will be generating additional COVID-19 variants based off of the thousands that already exist as of 2022. We will be using [this dataset](https://drive.google.com/file/d/1DyF9PdMbFQgiValuHtxSls34gdaY5067/view?usp=sharing){rel="noopener noreferrer" target="_blank"} located in Google Drive. 
+
+## Code 
+
+> Tip: I like to import `warnings` when using SDV in Jupyter notebook so that I can ignore any warnings that pop-up. Remember that SDV is an open source project and it is actively being updated by community members.
+        import warnings
+        warnings.filterwarnings('ignore')
+
+First, import the libraries Pandas and the CopulaGAN model from SDV.
+
+        import pandas as pd
+        from sdv.tabular import CopulaGAN
+
+I saved the aforementioned dataset as "variants.csv" in my local filesystem. I will use Pandas to read the data into the dataframe named  `data` and then see what that dataframe looks like.
+
+        data = pd.read_csv("variants.csv")
+        data.head(20)
+
+
+Next, create an instance of the model that you plan to use (CopulaGAN, in this example). After you create an instance of the model, you can fit the data to the model.
+
+        model = CopulaGAN()
+        model.fit(data)
+
+Now that you have a fitted model, you can specify how much synthetic data you want to generate from the model fitted to your original data.
+
+        new_data = model.sample(200)
+
+Let's view some of the new data:
+
+        new_data.head()
+
+# SDV  Repository & Documentation
+
+More tutorials and details regarding the SDV library can be found by following the links below. 
+
+The repository for SDV is found [here.](https://github.com/sdv-dev/SDV){rel="noopener noreferrer" target="_blank"}
+
+Further documentation for the SDV library can be found [here.](https://sdv.dev/SDV/){rel="noopener noreferrer" target="_blank"}
+
+SDV has an active Slack community with people who can answer any questions you have about how SDV works or how to implement it in your research. The link to join the Slack community can be found in the documentation above. 
+
+
+# Contributions
+
+This research toolkit is maintained by the UC Davis DataLab, and is open for contribution. See how you can contribute on the [Github repo](https://github.com/ucdavisdatalab/research-toolkits){rel="noopener noreferrer" target="_blank"}.
+
+This toolkit has been made possible thanks to contributions by:
+
+* [Charlie Fornaca](https://cup-of-char.com/){rel="noopener noreferrer" target="_blank"}
