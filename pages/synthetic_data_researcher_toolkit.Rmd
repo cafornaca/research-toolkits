@@ -31,6 +31,8 @@ opts_knit$set(width=75)
 # git images
 img1 <- "./img/variant_sample.png"
 img2 <- "./img/new_variant_head.png"
+img3 <- "./img/evaluate_results.png"
+
 
 ```
 
@@ -106,6 +108,30 @@ Let's view some of the new data:
         new_data.head()
 
 ![](`r img2`)
+
+Interesting! We were able to generate some "new" COVID-19 variants.
+
+### Evaluating our results
+
+We can evaluate how similar our synthetic data is to the original data by using the evualtion framework that comes with SDV:
+
+        from sdv.evaluation import evaluate
+
+We will use statistical measures of efficacy including the Kolmogorov-Smirnov (`KSTest`) test to compare the distributions of continuous columns and  the Chi-Squared (`CSTest`) test to compare the distributions of discrete columns. We can also use a detection metric such as `LogisticDetection` which evaluates how hard it is to distinguish the synthetic data from the real data by using a machine learning model.
+
+        metrics = ['KSTest', 'CSTest', 'LogisticDetection']
+
+> Tip: You can find other evaluation metrics in SDV's documentation [here.](https://sdv.dev/SDV/user_guides/evaluation/single_table_metrics.html){rel="noopener noreferrer" target="_blank"}
+
+Let's run the evaluation framework with the metrics we selected. This is done by using the `evaluate()` function we just imported with the newly generated data (`new_data`) and the original data (`data`). We also include the metrics that were defined above.
+
+        evaluate(new_data, data, aggregate=False, metrics=metrics) 
+
+> Tip: The evaluation framework can take quite a long time to run especially if you have a large amount of data! You can reduce the runtime of the evaluation framework by selecting only the evaluation metrics that you want to use. Otherwise, get a coffee and relax while it runs! 
+
+![](`r img3` "Here are our results from running the evaluation framework:")
+
+Hey, these are some pretty good scores! 
 
 # SDV  Repository & Documentation
 
